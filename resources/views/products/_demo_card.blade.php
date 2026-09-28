@@ -92,15 +92,23 @@ $keyMap = [
          style="position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);">
 
         {{-- ── FRONT FACE ── --}}
-        <div style="position:absolute; inset:0; width:100%; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:#161a23; border:1px solid {{ $isGaming ? 'rgba(168,85,247,0.4)' : '#1f2937' }}; border-radius:1rem; padding:1.25rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; box-sizing:border-box;">
+        <div style="position:absolute; inset:0; width:100%; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:#161a23; border:1px solid {{ $isGaming ? 'rgba(168,85,247,0.4)' : ($conditionBadge === 'İkinci El' ? 'rgba(16,185,129,0.5)' : '#1f2937') }}; border-radius:1rem; padding:1.25rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; box-sizing:border-box;">
 
             @if($isGaming)
                 {{-- Gaming Neon Accent Bar --}}
                 <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#9333ea,#ec4899,#06b6d4); z-index:30;"></div>
+            @elseif($conditionBadge === 'İkinci El')
+                {{-- Second Hand Accent Bar --}}
+                <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#10b981,#059669,#14b8a6); z-index:30;"></div>
             @endif
 
             {{-- Badges --}}
             <div class="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-1.5 max-w-[75%] pointer-events-none">
+                @if($conditionBadge === 'İkinci El')
+                    <span class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md border border-emerald-400/50">
+                        <i class="fa-solid fa-recycle text-[10px]"></i> İkinci El
+                    </span>
+                @endif
                 @if($isGaming)
                     <span class="bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-purple-500/30 border border-purple-400/50">
                         <i class="fa-solid fa-gamepad text-cyan-300 text-[10px]"></i> GAMING PC
@@ -204,13 +212,13 @@ $keyMap = [
         </div>
 
         {{-- ── BACK FACE ── --}}
-        <div style="position:absolute; inset:0; width:100%; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; transform:rotateY(180deg); background:#0f172a; color:white; border-radius:1rem; padding:1.15rem 1rem 0.9rem 1rem; border:2px solid #eab308; display:flex; flex-direction:column; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3); z-index:10; box-sizing:border-box;">
+        <div style="position:absolute; inset:0; width:100%; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; transform:rotateY(180deg); background:#0f172a; color:white; border-radius:1rem; padding:1.15rem 1rem 0.9rem 1rem; border:2px solid {{ $conditionBadge === 'İkinci El' ? '#10b981' : '#eab308' }}; display:flex; flex-direction:column; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3); z-index:10; box-sizing:border-box;">
             <div class="flex items-center justify-between border-b border-gray-700/80 pb-2 mb-2.5 shrink-0">
-                <h3 class="font-bold text-sm sm:text-base text-yellow-400 flex items-center gap-1.5">
+                <h3 class="font-bold text-sm sm:text-base {{ $conditionBadge === 'İkinci El' ? 'text-emerald-400' : 'text-yellow-400' }} flex items-center gap-1.5">
                     <i class="fa-solid fa-microchip"></i> Hızlı Bakış
                 </h3>
                 <span class="text-[10px] text-gray-400 flex items-center gap-1 font-medium bg-gray-800/80 px-2 py-0.5 rounded-full border border-gray-700/50">
-                    <i class="fa-solid fa-rotate-left text-yellow-400"></i> Geri Dön
+                    <i class="fa-solid fa-rotate-left {{ $conditionBadge === 'İkinci El' ? 'text-emerald-400' : 'text-yellow-400' }}"></i> Geri Dön
                 </span>
             </div>
 

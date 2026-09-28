@@ -217,15 +217,30 @@
 
         {{-- Aktif filtre badge'leri --}}
         @php
-            $hasAnyFilter = !empty($specFilters) || !empty($desktopTypeFilter) || request('category_id') || request('price_max');
+            $hasAnyFilter = !empty($specFilters) || !empty($desktopTypeFilter) || request('category_id') || request('price_max') || request('brand') || request('search');
         @endphp
         @if($hasAnyFilter)
-        <div class="flex flex-wrap gap-2 mb-6">
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+            {{-- Arama badge --}}
+            @if(request('search'))
+                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200 transition" title="Aramayı kaldır">
+                    <i class="fa-solid fa-magnifying-glass text-[9px]"></i> "{{ request('search') }}"
+                    <i class="fa-solid fa-xmark text-[10px] ml-0.5 text-emerald-600"></i>
+                </a>
+            @endif
             {{-- Kategori badge --}}
             @if($activeCategory)
-                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold">
+                <a href="{{ request()->fullUrlWithQuery(['category_id' => null]) }}" class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold hover:bg-emerald-100 transition" title="Kategoriyi kaldır">
                     <i class="fa-solid fa-sitemap text-[9px]"></i> {{ $activeCategory->name }}
-                </span>
+                    <i class="fa-solid fa-xmark text-[10px] ml-0.5 text-emerald-500"></i>
+                </a>
+            @endif
+            {{-- Marka badge --}}
+            @if(!empty($activeBrand))
+                <a href="{{ request()->fullUrlWithQuery(['brand' => null]) }}" class="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1 rounded-full text-xs font-semibold hover:bg-purple-100 transition" title="Markayı kaldır">
+                    <i class="fa-solid fa-tag text-[9px]"></i> {{ $activeBrand }}
+                    <i class="fa-solid fa-xmark text-[10px] ml-0.5 text-purple-500"></i>
+                </a>
             @endif
             {{-- Masaüstü Tipi badge'leri --}}
             @foreach((array)$desktopTypeFilter as $dtype)
@@ -244,6 +259,13 @@
                 </span>
                 @endforeach
             @endforeach
+            {{-- Fiyat badge --}}
+            @if(request('price_max'))
+                <a href="{{ request()->fullUrlWithQuery(['price_max' => null]) }}" class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold hover:bg-amber-100 transition" title="Fiyat filtresini kaldır">
+                    <i class="fa-solid fa-turkish-lira-sign text-[9px]"></i> Maks: {{ number_format(request('price_max'), 0, ',', '.') }} ₺
+                    <i class="fa-solid fa-xmark text-[10px] ml-0.5 text-amber-600"></i>
+                </a>
+            @endif
             <a href="{{ route('second-hand.index') }}"
                class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-100 transition">
                 <i class="fa-solid fa-xmark"></i> Tümünü Temizle
@@ -259,6 +281,9 @@
                     @if(request('category_id'))
                         <input type="hidden" name="category_id" value="{{ request('category_id') }}">
                     @endif
+                    @if(request('sort'))
+                        <input type="hidden" name="sort" id="sh-hidden-sort" value="{{ request('sort') }}">
+                    @endif
 
                     <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm sticky top-28 space-y-5">
 
@@ -270,7 +295,22 @@
                             <a href="{{ route('second-hand.index') }}" class="text-[11px] font-bold text-gray-400 hover:text-red-500 transition">SIFIRLA</a>
                         </div>
 
-                        {{-- Kategoriler: Sadece Laptop ve Masaüstü Bilgisayar --}}
+                        {{-- Hızlı Arama --}}
+                        <div>
+                            <div class="relative">
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                       placeholder="İkinci el ara (marka, model...)"
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-8 py-2.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400 text-xs"></i>
+                                @if(request('search'))
+                                    <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="absolute right-3 top-3 text-gray-400 hover:text-red-500 text-xs" title="Aramayı temizle">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Kategoriler & Alt Kategoriler --}}
                         <div>
                             <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                                 <i class="fa-solid fa-sitemap text-emerald-500 mr-1"></i> Kategori
@@ -281,33 +321,113 @@
                             @endphp
                             <ul class="space-y-1.5">
                                 <li>
-                                    <a href="{{ route('second-hand.index') }}"
-                                       class="sidebar-cat-btn flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold
+                                    <a href="{{ request()->fullUrlWithQuery(['category_id' => null]) }}"
+                                       class="sidebar-cat-btn flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold
                                               {{ $isAllShActive ? 'active-cat' : 'text-gray-600 hover:text-gray-900' }}">
-                                        <span class="cat-icon-box w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ $isAllShActive ? 'bg-emerald-900 text-emerald-300' : 'bg-gray-100 text-gray-500' }}">
-                                            <i class="fa-solid fa-recycle text-xs"></i>
+                                        <span class="flex items-center gap-2.5">
+                                            <span class="cat-icon-box w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ $isAllShActive ? 'bg-emerald-900 text-emerald-300' : 'bg-gray-100 text-gray-500' }}">
+                                                <i class="fa-solid fa-recycle text-xs"></i>
+                                            </span>
+                                            Tüm İkinci El
                                         </span>
-                                        Tüm İkinci El
+                                        <span class="text-[10px] {{ $isAllShActive ? 'bg-emerald-800 text-emerald-200' : 'bg-gray-100 text-gray-500' }} px-2 py-0.5 rounded-full font-bold">
+                                            {{ $totalUsed }}
+                                        </span>
                                     </a>
                                 </li>
                                 @foreach($shCategories as $shCat)
                                     @php
                                         $isActive = $currentShCatId == $shCat->id;
-                                        $catIcon  = $shCat->slug === 'laptop' ? 'fa-laptop' : 'fa-desktop';
+                                        $catIcon  = $shCat->slug === 'laptop' ? 'fa-laptop' : ($shCat->slug === 'masaustu-bilgisayar' ? 'fa-desktop' : 'fa-layer-group');
+                                        $hasChildren = $shCat->children && $shCat->children->count() > 0;
+                                        $isChildActive = $hasChildren && $shCat->children->pluck('id')->contains($currentShCatId);
+                                        $catTotal = $shCat->products_count + ($hasChildren ? $shCat->children->sum('products_count') : 0);
                                     @endphp
                                     <li>
-                                        <a href="{{ route('second-hand.index') }}?category_id={{ $shCat->id }}"
-                                           class="sidebar-cat-btn flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold
-                                                  {{ $isActive ? 'active-cat' : 'text-gray-600 hover:text-gray-900' }}">
-                                            <span class="cat-icon-box w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ $isActive ? 'bg-emerald-900 text-emerald-300' : 'bg-gray-100 text-gray-500' }}">
-                                                <i class="fa-solid {{ $catIcon }} text-xs"></i>
+                                        <a href="{{ request()->fullUrlWithQuery(['category_id' => $shCat->id]) }}"
+                                           class="sidebar-cat-btn flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold
+                                                  {{ ($isActive && !$isChildActive) ? 'active-cat' : 'text-gray-600 hover:text-gray-900' }}">
+                                            <span class="flex items-center gap-2.5">
+                                                <span class="cat-icon-box w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ ($isActive && !$isChildActive) ? 'bg-emerald-900 text-emerald-300' : 'bg-gray-100 text-gray-500' }}">
+                                                    <i class="fa-solid {{ $catIcon }} text-xs"></i>
+                                                </span>
+                                                {{ $shCat->name }}
                                             </span>
-                                            {{ $shCat->name }}
+                                            @if($catTotal > 0)
+                                                <span class="text-[10px] {{ ($isActive && !$isChildActive) ? 'bg-emerald-800 text-emerald-200' : 'bg-gray-100 text-gray-500' }} px-2 py-0.5 rounded-full font-bold">
+                                                    {{ $catTotal }}
+                                                </span>
+                                            @endif
                                         </a>
+                                        @if($hasChildren)
+                                            <ul class="pl-6 pt-1 pb-1 space-y-1">
+                                                @foreach($shCat->children as $subCat)
+                                                    @php
+                                                        $isSubActive = $currentShCatId == $subCat->id;
+                                                    @endphp
+                                                    @if($subCat->products_count > 0 || $isSubActive)
+                                                    <li>
+                                                        <a href="{{ request()->fullUrlWithQuery(['category_id' => $subCat->id]) }}"
+                                                           class="sub-cat-link flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition
+                                                                  {{ $isSubActive ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }}">
+                                                            <span class="flex items-center gap-1.5 truncate">
+                                                                <i class="fa-solid fa-angle-right text-[9px] {{ $isSubActive ? 'text-emerald-600' : 'text-gray-400' }}"></i>
+                                                                {{ $subCat->name }}
+                                                            </span>
+                                                            <span class="text-[9px] {{ $isSubActive ? 'bg-emerald-200 text-emerald-900' : 'bg-white text-gray-400 border border-gray-100' }} px-1.5 py-0.2 rounded font-bold">
+                                                                {{ $subCat->products_count }}
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
                                     </li>
                                 @endforeach
                             </ul>
                         </div>
+
+                        {{-- Marka Filtresi --}}
+                        @if(isset($usedBrands) && $usedBrands->isNotEmpty())
+                        <div>
+                            <div class="h-px bg-gray-100 mb-4"></div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <i class="fa-solid fa-tag text-emerald-500 mr-1"></i> Marka
+                                </h3>
+                                @if(request('brand'))
+                                    <a href="{{ request()->fullUrlWithQuery(['brand' => null]) }}" class="text-[10px] text-gray-400 hover:text-red-500 font-bold transition">TEMİZLE</a>
+                                @endif
+                            </div>
+                            <div class="space-y-1 max-h-52 overflow-y-auto pr-1">
+                                @foreach($usedBrands as $b)
+                                    @php
+                                        $isBrandActive = request('brand') === $b->brand;
+                                        $brandInputId  = 'brand-' . \Illuminate\Support\Str::slug($b->brand);
+                                    @endphp
+                                    <div>
+                                        <input type="radio"
+                                               class="spec-checkbox"
+                                               id="{{ $brandInputId }}"
+                                               name="brand"
+                                               value="{{ $b->brand }}"
+                                               {{ $isBrandActive ? 'checked' : '' }}
+                                               onchange="document.getElementById('sh-filter-form').submit()">
+                                        <label for="{{ $brandInputId }}" class="spec-checkbox-label group">
+                                            <span class="spec-checkbox-box"></span>
+                                            <span class="flex-1 text-xs font-semibold text-gray-700 truncate" title="{{ $b->brand }}">
+                                                {{ $b->brand }}
+                                            </span>
+                                            <span class="text-[10px] {{ $isBrandActive ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500' }} px-1.5 py-0.5 rounded-full font-bold shrink-0">
+                                                {{ $b->count }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
                         {{-- Masaüstü Tipi Filtresi — her zaman görünür --}}
                         <div>
@@ -487,15 +607,30 @@
             {{-- ── ÜRÜN GRID ── --}}
             <main class="lg:col-span-3 min-w-0 w-full">
 
-                {{-- Sonuç Özeti --}}
-                <div class="flex items-center justify-between mb-5 bg-white rounded-2xl px-5 py-3 border border-gray-100 shadow-sm">
-                    <p class="text-sm text-gray-500">
-                        <span class="font-black text-gray-800">{{ $products->total() }}</span> ikinci el ürün
-                        @if($activeCategory) <span class="text-emerald-600 font-semibold">— {{ $activeCategory->name }}</span> @endif
-                    </p>
-                    <span class="trust-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px]">
-                        <i class="fa-solid fa-shield-check"></i> Tümü Test Edilmiş
-                    </span>
+                {{-- Sonuç Özeti & Sıralama --}}
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 bg-white rounded-2xl px-5 py-3 border border-gray-100 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-black text-gray-800">{{ $products->total() }}</span> ikinci el ürün
+                            @if($activeCategory) <span class="text-emerald-600 font-semibold">— {{ $activeCategory->name }}</span> @endif
+                            @if(!empty($activeBrand)) <span class="text-purple-600 font-semibold">({{ $activeBrand }})</span> @endif
+                        </p>
+                        <span class="trust-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] hidden md:inline-flex">
+                            <i class="fa-solid fa-shield-check"></i> Tümü Test Edilmiş
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-auto">
+                        <label for="sh-sort-select" class="text-xs text-gray-400 font-medium whitespace-nowrap">
+                            <i class="fa-solid fa-arrow-down-short-wide text-emerald-500 mr-1"></i> Sırala:
+                        </label>
+                        <select id="sh-sort-select"
+                                class="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-gray-700 font-semibold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+                                onchange="applySort(this.value)">
+                            <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>En Yeni İlanlar</option>
+                            <option value="price_asc" {{ ($sort ?? '') === 'price_asc' ? 'selected' : '' }}>Fiyat: Artan</option>
+                            <option value="price_desc" {{ ($sort ?? '') === 'price_desc' ? 'selected' : '' }}>Fiyat: Azalan</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="sh-product-area" class="relative">
@@ -563,6 +698,21 @@ window.toggleSpecGroup = function(id) {
     if (el) el.classList.toggle('open');
 };
 
+window.applySort = function(val) {
+    const form = document.getElementById('sh-filter-form');
+    if (!form) return;
+    let sortInput = document.getElementById('sh-hidden-sort');
+    if (!sortInput) {
+        sortInput = document.createElement('input');
+        sortInput.type = 'hidden';
+        sortInput.name = 'sort';
+        sortInput.id = 'sh-hidden-sort';
+        form.appendChild(sortInput);
+    }
+    sortInput.value = val;
+    form.submit();
+};
+
 async function toggleFavorite(btn, productId) {
     try {
         const res = await fetch(`/favorites/toggle/${productId}`, {
@@ -620,7 +770,7 @@ async function toggleFavorite(btn, productId) {
         } catch (e) {}
 
         const urlParams = new URLSearchParams(window.location.search);
-        const hasFilterParam = urlParams.has('category_id') || urlParams.has('desktop_type') || urlParams.has('specs') || urlParams.has('price_max') || urlParams.has('page') || window.location.hash.includes('sh-product-area');
+        const hasFilterParam = urlParams.has('category_id') || urlParams.has('desktop_type') || urlParams.has('specs') || urlParams.has('price_max') || urlParams.has('brand') || urlParams.has('search') || urlParams.has('sort') || urlParams.has('page') || window.location.hash.includes('sh-product-area');
 
         if (hasFilterParam) {
             const target = document.getElementById('sh-product-area') || document.getElementById('sh-filter-form');

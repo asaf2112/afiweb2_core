@@ -84,18 +84,40 @@ class ProductController extends Controller
      */
     public function secondHandIndex(Request $request)
     {
-        // Yalnızca Laptop (slug: laptop) ve Masaüstü (slug: masaustu-bilgisayar) kategorileri
-        $allowedSlugs      = ['laptop', 'masaustu-bilgisayar'];
-        $allowedCategories = Category::whereIn('slug', $allowedSlugs)->get();
-        $allowedCatIds     = $allowedCategories->pluck('id')->toArray();
-
         $query = Product::with('category')
-            ->where('condition_type', 'used')
-            ->whereIn('category_id', $allowedCatIds);
+            ->where(function ($q) {
+                $q->where('condition_type', 'used')
+                  ->orWhere('condition_type', 'second_hand')
+                  ->orWhere('condition_type', 'ikinci_el');
+            });
 
-        // Kategori filtresi (sadece izin verilen kategoriler içinde)
-        if ($request->filled('category_id') && in_array($request->input('category_id'), $allowedCatIds)) {
-            $query->where('category_id', $request->input('category_id'));
+        // Kategori filtresi (Ana veya alt kategori)
+        $activeCategory = null;
+        if ($request->filled('category_id')) {
+            $catId = $request->input('category_id');
+            $activeCategory = Category::with('children')->find($catId);
+            if ($activeCategory) {
+                $catIds = array_merge([$activeCategory->id], $activeCategory->children->pluck('id')->toArray());
+                $query->whereIn('category_id', $catIds);
+            }
+        }
+
+        // Arama (Canlı veya kelime bazlı)
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('brand', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhere('specs', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Marka filtresi
+        $activeBrand = null;
+        if ($request->filled('brand')) {
+            $activeBrand = trim($request->input('brand'));
+            $query->where('brand', $activeBrand);
         }
 
         // Masaüstü Tipi filtresi — usage_status sütunu üzerinden
@@ -122,48 +144,81 @@ class ProductController extends Controller
             $query->where('price', '<=', (float) $request->input('price_max'));
         }
 
-        $products = $query->latest()->paginate(18)->withQueryString();
+        // Sıralama (Sort)
+        $sort = $request->input('sort', 'latest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
 
-        // İstatistikler — yalnızca izin verilen kategorilerdeki ikinci el ürünler
-        $totalUsed = Product::where('condition_type', 'used')
-            ->whereIn('category_id', $allowedCatIds)
-            ->count();
+        $products = $query->paginate(18)->withQueryString();
 
-        // Desktop alt-tip sayaçları — tüm izin verilen kategorilerde usage_status'a göre say
-        $desktopCatId = $allowedCategories->firstWhere('slug', 'masaustu-bilgisayar')?->id;
+        // Toplam ikinci el ürün sayısı
+        $totalUsed = Product::whereIn('condition_type', ['used', 'second_hand', 'ikinci_el'])->count();
+
+        // Desktop alt-tip sayaçları
         $desktopTypeCounts = ['Full Set' => 0, 'Sadece Kasa' => 0, 'Sadece Monitör' => 0];
         foreach (array_keys($desktopTypeCounts) as $dtype) {
-            $desktopTypeCounts[$dtype] = Product::where('condition_type', 'used')
-                ->whereIn('category_id', $allowedCatIds)
+            $desktopTypeCounts[$dtype] = Product::whereIn('condition_type', ['used', 'second_hand', 'ikinci_el'])
                 ->where('usage_status', $dtype)
                 ->count();
         }
 
-        // Sidebar için sadece Laptop + Masaüstü kategorileri (accordion yok, doğrudan liste)
-        $shCategories = $allowedCategories;
+        // İkinci el ürünlerin bulunduğu kategoriler
+        $shCategories = Category::whereNull('parent_id')
+            ->with(['children' => function($q) {
+                $q->withCount(['products' => function($pq) {
+                    $pq->whereIn('condition_type', ['used', 'second_hand', 'ikinci_el']);
+                }]);
+            }])
+            ->withCount(['products' => function($pq) {
+                $pq->whereIn('condition_type', ['used', 'second_hand', 'ikinci_el']);
+            }])
+            ->get()
+            ->filter(function($cat) {
+                return $cat->products_count > 0 || $cat->children->sum('products_count') > 0 || in_array($cat->slug, ['laptop', 'masaustu-bilgisayar']);
+            });
+
+        // İkinci el markalar listesi
+        $usedBrands = Product::whereIn('condition_type', ['used', 'second_hand', 'ikinci_el'])
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->select('brand', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->groupBy('brand')
+            ->orderBy('brand')
+            ->get();
 
         $priceRange  = $this->getPriceRange(null, 'used');
         $specFilters = $request->input('specs', []);
-
-        $activeCategory = $request->filled('category_id')
-            ? $allowedCategories->firstWhere('id', $request->input('category_id'))
-            : null;
 
         $specFilterOptions = $activeCategory
             ? $this->buildSpecFilterOptions($activeCategory->id)
             : collect();
 
+        $desktopCatId = Category::where('slug', 'masaustu-bilgisayar')->value('id');
+
         return view('second-hand', compact(
             'products',
             'totalUsed',
             'shCategories',
+            'usedBrands',
+            'activeBrand',
             'priceRange',
             'specFilters',
             'specFilterOptions',
             'activeCategory',
             'desktopTypeFilter',
             'desktopTypeCounts',
-            'desktopCatId'
+            'desktopCatId',
+            'sort'
         ));
     }
 
