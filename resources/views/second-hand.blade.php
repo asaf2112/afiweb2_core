@@ -170,17 +170,17 @@
                     </span>
                 </h1>
                 <p class="text-gray-400 text-lg max-w-xl">
-                    Her ürün uzman teknisyenlerimiz tarafından test edilmiş, temizlenmiş ve garantili olarak sunulmaktadır.
-                    En uygun fiyata kaliteli teknoloji burada.
+                    Her ürün uzman teknisyenlerimiz tarafından 32 noktada test edilmiş, termal bakımı yapılmış ve 1 ay firma garantisiyle sunulmaktadır.
+                    Olası donanım arızalarında birebir değişim imkanı.
                 </p>
 
                 {{-- Trust badges --}}
                 <div class="flex flex-wrap gap-3 mt-6">
                     @foreach([
-                        ['fa-circle-check','Test Edilmiş'],
-                        ['fa-shield-halved','14 Gün İade'],
-                        ['fa-truck-fast','Hızlı Kargo'],
-                        ['fa-file-invoice','Faturalı'],
+                        ['fa-circle-check','32 Nokta Test Edilmiş'],
+                        ['fa-shield-check','1 Ay Firma Garantisi'],
+                        ['fa-repeat','Arızada Birebir Değişim'],
+                        ['fa-truck-fast','Güvenli Paketleme'],
                     ] as [$icon, $label])
                     <span class="trust-badge bg-white/5 text-gray-300 border border-white/10">
                         <i class="fa-solid {{ $icon }} text-emerald-400"></i> {{ $label }}
@@ -201,7 +201,7 @@
                     </div>
                     <div>
                         <div class="text-xl font-black text-emerald-400">✓</div>
-                        <div class="text-[11px] text-gray-500">Garantili</div>
+                        <div class="text-[11px] text-gray-500">1 Ay Garantili</div>
                     </div>
                 </div>
             </div>
@@ -242,40 +242,33 @@
                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ request('price_max') == 20000 ? 'bg-rose-600 text-white shadow-rose-500/20' : 'bg-white text-gray-700 hover:bg-rose-50 hover:text-rose-700 border border-gray-200/80' }}">
                     <i class="fa-solid fa-fire text-rose-500"></i> 20.000 ₺ Altı Fırsatlar
                 </a>
-                <button type="button" onclick="openTradeInModal()"
-                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 ml-auto cursor-pointer font-bold">
-                    <i class="fa-solid fa-arrows-rotate"></i> Eski Cihazını Bize Sat
-                </button>
             </div>
         </div>
 
-        {{-- ── TRADE-IN / ESKİ CİHAZINI SAT BANNERI ── --}}
-        <div class="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-500/30 p-6 md:p-8 text-white shadow-xl">
-            <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-                <div class="space-y-2 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                        <i class="fa-solid fa-recycle"></i> Eskiyi Getir, Yeniyi Götür
+        {{-- ── İKİNCİ EL GÜVENCE BİLGİ ŞERİDİ ── --}}
+        <div class="mb-8 rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/20 p-5 md:p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0 hidden sm:flex">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-check-double"></i> Şeffaf & Güvenli Alışveriş
                     </div>
-                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">
-                        Eski Bilgisayarını veya Parçalarını <span class="text-emerald-400">Değerinde Sat!</span>
+                    <h2 class="text-base sm:text-lg font-black text-white">
+                        Tüm İkinci El Ürünlerde <span class="text-emerald-400">1 Ay Donanım Garantisi</span>
                     </h2>
-                    <p class="text-gray-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                        Kasa, laptop, ekran kartı ya da monitörünü getir; 15 dakikada ücretsiz ekspertiz yapalım. İster anında <strong class="text-white">nakit ödeme</strong> al, ister yeni alışverişinde <strong class="text-white">takas indirimi</strong> olarak kullan.
+                    <p class="text-gray-300 text-xs mt-0.5 max-w-2xl leading-relaxed">
+                        Cihazlarımız 32 nokta testinden geçirilerek teslim edilir. Olası bir donanım arızasında koşulsuz <strong class="text-emerald-300">birebir değişim hakkınız</strong> bulunmaktadır.
                     </p>
                 </div>
-                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 w-full lg:w-auto">
-                    <a href="https://wa.me/905555555555?text={{ urlencode('Merhaba Afi Bilişim! İkinci el bilgisayarımı / parçamı satmak veya takas etmek için fiyat teklifi almak istiyorum.') }}"
-                       target="_blank"
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25">
-                        <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp'tan Fiyat Al
-                    </a>
-                    <button type="button"
-                            onclick="openTradeInModal()"
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/15">
-                        <i class="fa-solid fa-clipboard-list text-emerald-400"></i> Hızlı Teklif Formu
-                    </button>
-                </div>
+            </div>
+            <div class="shrink-0 flex items-center gap-3">
+                <a href="https://wa.me/905555555555?text={{ urlencode('Merhaba Afi Bilişim! İkinci el ürünleriniz hakkında bilgi almak istiyorum.') }}"
+                   target="_blank"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider transition shadow-md shadow-emerald-500/20">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Danışma
+                </a>
             </div>
         </div>
 
@@ -797,21 +790,21 @@
 
                 <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
                     <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4">
-                        <i class="fa-solid fa-shield-halved"></i>
+                        <i class="fa-solid fa-shield-check"></i>
                     </div>
-                    <h3 class="font-bold text-gray-900 text-base mb-1.5">Faturalı & 6 Ay Garanti</h3>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">1 Ay Donanım Garantisi</h3>
                     <p class="text-gray-500 text-xs leading-relaxed">
-                        Her alışverişiniz adınıza resmi e-fatura ve 6 ay Afi Bilişim teknik servis garantisi ile korunur. Süpriz arızalara yer yok.
+                        Satın aldığınız her ikinci el ürün, teslim tarihinden itibaren 1 ay süreyle firmamızın parça ve teknik donanım garantisi altındadır.
                     </p>
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl mb-4">
-                        <i class="fa-solid fa-rotate-left"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-repeat"></i>
                     </div>
-                    <h3 class="font-bold text-gray-900 text-base mb-1.5">14 Gün Kolay İade</h3>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">Arızada Birebir Değişim</h3>
                     <p class="text-gray-500 text-xs leading-relaxed">
-                        Cihazınız beklentinizi karşılamazsa 14 gün içerisinde koşulsuz iade edebilir veya mağazamızdaki başka bir ürünle değiştirebilirsiniz.
+                        Butik işletme politikamız gereği keyfi iade bulunmamaktadır. Ancak garanti süresince oluşabilecek donanım arızalarında birebir parça/cihaz değişimi sağlanır.
                     </p>
                 </div>
             </div>
@@ -902,15 +895,15 @@
                 @foreach([
                     [
                         'q' => 'İkinci el ürünlerin garantisi var mı?',
-                        'a' => 'Evet! Afi Bilişim\'den satın aldığınız tüm ikinci el masaüstü bilgisayar, laptop ve donanım parçaları 6 ay süresince doğrudan firmamızın teknik servis garantisi altındadır. Ayrıca cihazların faturası adınıza düzenlenmektedir.'
+                        'a' => 'Evet! Afi Bilişim\'den satın aldığınız tüm ikinci el masaüstü bilgisayar, laptop ve donanım parçaları 1 ay süresince doğrudan firmamızın donanım ve teknik parça garantisi altındadır.'
+                    ],
+                    [
+                        'q' => 'İade veya değişim imkanı var mı?',
+                        'a' => 'Butik bir işletme olduğumuz için ikinci el ürünlerde keyfi iade kabul edilmemektedir. Ancak satın aldığınız üründe 1 aylık garanti süresi boyunca donanımsal bir arıza veya problem yaşanması halinde doğrudan birebir parça veya ürün değişimi yapılmaktadır.'
                     ],
                     [
                         'q' => 'Ürünü mağazanızda görüp test ederek alabilir miyim?',
-                        'a' => 'Kesinlikle. Fiziksel mağazamıza gelerek beğendiğiniz ürünü FurMark, AIDA64 veya istediğiniz oyun ve programlarla bizzat test edebilir, uzman teknisyenlerimiz eşliğinde elden teslim alabilirsiniz.'
-                    ],
-                    [
-                        'q' => 'Eski bilgisayarımı veya parçalarımı getirip takas yapabilir miyim?',
-                        'a' => 'Evet. Eskiyi Getir / Yeniyi Götür programımız kapsamında mevcut cihazınızı veya donanım parçalarınızı (ekran kartı, işlemci, RAM vb.) değerinde sayarak yeni alacağınız sistemden takas indirimi düşebiliyoruz.'
+                        'a' => 'Kesinlikle! Fiziksel mağazamıza gelerek beğendiğiniz ürünü FurMark, AIDA64 veya istediğiniz oyun ve programlarla bizzat test edebilir, uzman teknisyenlerimiz eşliğinde elden teslim alabilirsiniz.'
                     ],
                     [
                         'q' => 'İkinci el sistemde RAM veya SSD yükseltmesi yapabilir miyim?',
@@ -939,77 +932,7 @@
     </div>
 </div>
 
-{{-- ── TRADE-IN / DEĞERLEME MODALI ── --}}
-<div id="sh-tradein-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 animate-in fade-in zoom-in duration-200">
-        <button type="button" onclick="closeTradeInModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition">
-            <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
-                <i class="fa-solid fa-arrows-rotate"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-black text-gray-900 leading-tight">Eski Cihazını Sat & Fiyat Al</h3>
-                <p class="text-xs text-gray-500">Bilgileri doldurun, WhatsApp üzerinden hemen teklif verelim.</p>
-            </div>
-        </div>
-
-        <form id="tradein-form" onsubmit="submitTradeIn(event)" class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">Cihaz Türü</label>
-                <select id="ti-type" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none focus:border-emerald-500">
-                    <option value="Masaüstü Oyun Kasası">🎮 Masaüstü Oyun Kasası</option>
-                    <option value="Dizüstü Bilgisayar (Laptop)">💻 Laptop / Dizüstü</option>
-                    <option value="Ekran Kartı (GPU)">⚡ Ekran Kartı</option>
-                    <option value="Oyuncu Monitörü">🖥️ Monitör</option>
-                    <option value="Bileşenler / Parçalar">🧩 İşlemci / Anakart / RAM</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">Cihaz / Parça Özellikleri ve Modeli</label>
-                <textarea id="ti-specs" rows="3" required
-                          placeholder="Örn: ASUS ROG Strix RTX 3070 8GB, kutusu faturası var, temiz..."
-                          class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-800 focus:outline-none focus:border-emerald-500"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">Kozmetik Durum</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
-                        <input type="radio" name="ti_condition" value="Sıfır Ayarında / Kutulu" checked class="text-emerald-500">
-                        <span>A+ (Kutulu)</span>
-                    </label>
-                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
-                        <input type="radio" name="ti_condition" value="Temiz / Sorunsuz" class="text-emerald-500">
-                        <span>A (Temiz)</span>
-                    </label>
-                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
-                        <input type="radio" name="ti_condition" value="Kullanım İzi Var" class="text-emerald-500">
-                        <span>B (İyi)</span>
-                    </label>
-                </div>
-            </div>
-
-            <button type="submit"
-                    class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
-                <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp ile Hızlı Fiyat İste
-            </button>
-        </form>
-    </div>
-</div>
-
 <script>
-window.openTradeInModal = function() {
-    const m = document.getElementById('sh-tradein-modal');
-    if (m) m.classList.remove('hidden');
-};
-window.closeTradeInModal = function() {
-    const m = document.getElementById('sh-tradein-modal');
-    if (m) m.classList.add('hidden');
-};
 window.toggleFaq = function(idx) {
     const ans = document.getElementById('faq-ans-' + idx);
     const icon = document.getElementById('faq-icon-' + idx);
@@ -1017,16 +940,6 @@ window.toggleFaq = function(idx) {
         ans.classList.toggle('hidden');
         if (icon) icon.classList.toggle('rotate-180');
     }
-};
-window.submitTradeIn = function(e) {
-    e.preventDefault();
-    const type = document.getElementById('ti-type').value;
-    const specs = document.getElementById('ti-specs').value;
-    const condEl = document.querySelector('input[name="ti_condition"]:checked');
-    const cond = condEl ? condEl.value : '';
-    const text = `Merhaba Afi Bilişim! İkinci el cihazımı satmak / takas teklifi almak istiyorum:\n\n• Cihaz Türü: ${type}\n• Özellikler: ${specs}\n• Kondisyon: ${cond}\n\nFiyat teklifinizi alabilir miyim?`;
-    window.open(`https://wa.me/905555555555?text=${encodeURIComponent(text)}`, '_blank');
-    closeTradeInModal();
 };
 window.toggleCat = function(liEl) { if (liEl) liEl.classList.toggle('open'); };
 window.toggleSpecGroup = function(id) {
