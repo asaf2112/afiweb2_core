@@ -30,7 +30,7 @@
 
 <!-- Gelişmiş Arama ve Filtreleme Paneli -->
 <div class="bg-adminCard rounded-2xl border border-adminBorder p-4 mb-6 shadow-md">
-    <form action="{{ route('admin.products.index') }}" method="GET" id="admin-product-filter-form" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
+    <form action="{{ route('admin.products.index') }}" method="GET" id="admin-product-filter-form" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
 
         {{-- Canlı Kelime Araması --}}
         <div>
@@ -71,6 +71,23 @@
                         </option>
                     @endforeach
                 @endforeach
+            </select>
+        </div>
+
+        {{-- Marka Filtresi --}}
+        <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Marka</label>
+            <select name="brand" 
+                    onchange="document.getElementById('admin-product-filter-form').submit()" 
+                    class="w-full bg-slate-900 border border-slate-700 focus:border-adminYellow rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition-colors">
+                <option value="">Tüm Markalar</option>
+                @if(isset($brands))
+                    @foreach($brands as $b)
+                        <option value="{{ $b->name }}" {{ request('brand') == $b->name ? 'selected' : '' }}>
+                            🏷️ {{ $b->name }}
+                        </option>
+                    @endforeach
+                @endif
             </select>
         </div>
 

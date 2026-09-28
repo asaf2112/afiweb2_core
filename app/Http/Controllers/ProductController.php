@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -775,104 +776,29 @@ class ProductController extends Controller
      */
     public function brandsIndex()
     {
-        // Popüler ve öne çıkan marka metadata tanımları
-        $featuredBrandConfigs = [
-            'asus' => [
-                'name'        => 'ASUS',
-                'slug'        => 'asus',
-                'badge'       => 'In Search of Incredible',
-                'accent'      => '#0071C5',
-                'logo_bg'     => 'from-blue-600 via-indigo-600 to-slate-900',
-                'icon'        => 'fa-laptop-code',
-                'description' => 'ROG ve TUF Gaming serisi üstün anakartlar, ekran kartları, monitörler ve oyuncu laptopları.',
-                'tags'        => ['Anakart', 'Ekran Kartı', 'Gaming Laptop', 'Monitör', 'Kasa', 'PSU'],
-            ],
-            'msi' => [
-                'name'        => 'MSI',
-                'slug'        => 'msi',
-                'badge'       => 'True Gaming',
-                'accent'      => '#FF0000',
-                'logo_bg'     => 'from-red-600 via-rose-700 to-slate-950',
-                'icon'        => 'fa-dragon',
-                'description' => 'Yüksek performanslı Gaming X ekran kartları, Tomahawk anakartlar, hazır oyuncu kasaları ve laptoplar.',
-                'tags'        => ['Ekran Kartı', 'Anakart', 'Hazır Sistem', 'Gaming Laptop', 'Kasa', 'PSU'],
-            ],
-            'samsung' => [
-                'name'        => 'Samsung',
-                'slug'        => 'samsung',
-                'badge'       => 'Next-Gen Storage',
-                'accent'      => '#1428A0',
-                'logo_bg'     => 'from-blue-700 via-sky-600 to-slate-900',
-                'icon'        => 'fa-bolt-lightning',
-                'description' => '990 PRO & 980 PRO NVMe SSD depolama çözümleri ve Odyssey serisi kavisli 2K/4K gaming monitörler.',
-                'tags'        => ['NVMe SSD', 'Gaming Monitör', 'M.2 Depolama'],
-            ],
-            'corsair' => [
-                'name'        => 'Corsair',
-                'slug'        => 'corsair',
-                'badge'       => 'Built to Game',
-                'accent'      => '#F59E0B',
-                'logo_bg'     => 'from-amber-500 via-yellow-500 to-slate-950',
-                'icon'        => 'fa-ship',
-                'description' => 'Dominator & Vengeance DDR5 bellekler, 80+ Gold modüler güç kaynakları ve hava akışı optimize kasalar.',
-                'tags'        => ['DDR5 RAM', 'Modüler PSU', 'Oyuncu Kasası', 'Gen4 SSD'],
-            ],
-            'kingston' => [
-                'name'        => 'Kingston',
-                'slug'        => 'kingston',
-                'badge'       => 'Engineered with Precision',
-                'accent'      => '#DC2626',
-                'logo_bg'     => 'from-red-700 via-orange-600 to-slate-900',
-                'icon'        => 'fa-memory',
-                'description' => 'Fury Beast & Renegade RGB yüksek frekanslı RAM bellekler ve KC3000 / NV2 Gen4 yüksek hızlı SSD’ler.',
-                'tags'        => ['DDR5 RAM', 'Gen4 SSD', 'Depolama'],
-            ],
-            'intel' => [
-                'name'        => 'Intel',
-                'slug'        => 'intel',
-                'badge'       => 'Intel Core Inside',
-                'accent'      => '#0068B5',
-                'logo_bg'     => 'from-sky-600 via-blue-700 to-slate-950',
-                'icon'        => 'fa-microchip',
-                'description' => '14. ve 13. nesil Intel Core i9, i7 ve i5 işlemciler ile hibrit mimaride maksimum oyun ve içerik performansı.',
-                'tags'        => ['İşlemci (CPU)', 'LGA1700', 'LGA1200'],
-            ],
-            'amd' => [
-                'name'        => 'AMD',
-                'slug'        => 'amd',
-                'badge'       => 'Ryzen Performance',
-                'accent'      => '#ED1C24',
-                'logo_bg'     => 'from-red-600 via-red-800 to-slate-950',
-                'icon'        => 'fa-fire',
-                'description' => '3D V-Cache mimarili Ryzen 7 7800X3D ve Ryzen 5 serisi efsanevi oyun işlemcileri.',
-                'tags'        => ['İşlemci (CPU)', 'AM5', 'AM4'],
-            ],
-            'gigabyte' => [
-                'name'        => 'Gigabyte',
-                'slug'        => 'gigabyte',
-                'badge'       => 'AORUS Team Up Fight On',
-                'accent'      => '#F97316',
-                'logo_bg'     => 'from-orange-600 via-amber-700 to-slate-950',
-                'icon'        => 'fa-shield',
-                'description' => 'AORUS ve Ultra Durable serisi sağlam anakartlar ve dayanıklı donanım mimarisi.',
-                'tags'        => ['Anakart', 'Ekran Kartı', 'Bileşenler'],
-            ],
-            'afi-gaming' => [
-                'name'        => 'Afi Gaming',
-                'slug'        => 'afi-gaming',
-                'badge'       => 'Afi Özel Toplama Sistemler',
-                'accent'      => '#EAB308',
-                'logo_bg'     => 'from-yellow-500 via-amber-600 to-slate-950',
-                'icon'        => 'fa-computer',
-                'description' => 'Afi Bilişim atölyesinde uzman teknisyenler tarafından toplanıp stres testlerinden geçirilmiş hazır gaming sistemler.',
-                'tags'        => ['Hazır Oyuncu Kasası', 'Toplama PC', 'Masaüstü'],
-            ],
+        // 1. Veritabanındaki aktif markaları çek
+        $brandsFromDb = Brand::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $gradients = [
+            'from-blue-600 via-indigo-600 to-slate-900',
+            'from-red-600 via-rose-700 to-slate-950',
+            'from-blue-700 via-sky-600 to-slate-900',
+            'from-amber-500 via-yellow-500 to-slate-950',
+            'from-emerald-600 via-teal-700 to-slate-950',
+            'from-purple-600 via-indigo-700 to-slate-950',
+            'from-orange-600 via-amber-700 to-slate-950',
+            'from-sky-600 via-blue-700 to-slate-950',
+            'from-rose-600 via-pink-700 to-slate-950',
         ];
 
-        // Veritabanındaki ürün istatistikleriyle birleştir
         $brandsList = [];
-        foreach ($featuredBrandConfigs as $key => $conf) {
-            $brandName = $conf['name'];
+        $index = 0;
+
+        foreach ($brandsFromDb as $b) {
+            $brandName = $b->name;
             $productsQuery = Product::where('brand', $brandName)
                 ->where(function ($q) {
                     $q->whereNull('condition_type')
@@ -883,15 +809,34 @@ class ProductController extends Controller
             $minPrice = (clone $productsQuery)->min('price') ?? 0;
             $sampleProducts = (clone $productsQuery)->with('category')->take(3)->get();
 
-            $conf['count'] = $count;
-            $conf['min_price'] = $minPrice;
-            $conf['sample_products'] = $sampleProducts;
+            // Markaya ait ürünlerin kategorilerinden dinamik etiketler oluştur
+            $catNames = (clone $productsQuery)->join('categories', 'products.category_id', '=', 'categories.id')
+                ->pluck('categories.name')
+                ->unique()
+                ->take(4)
+                ->toArray();
 
-            $brandsList[] = $conf;
+            $tags = !empty($catNames) ? $catNames : ['Donanım', 'Teknoloji', 'Afi Bilişim'];
+
+            $brandsList[] = [
+                'name'            => $b->name,
+                'slug'            => $b->slug,
+                'badge'           => $b->badge ?? ($b->slogan ?? 'Resmi Katalog'),
+                'logo'            => $b->logo_url,
+                'logo_bg'         => $gradients[$index % count($gradients)],
+                'icon'            => 'fa-award',
+                'description'     => $b->description ?? ($b->slogan ?? "{$b->name} ürünleri ve yüksek kaliteli donanım bileşenleri."),
+                'tags'            => $tags,
+                'count'           => $count,
+                'min_price'       => $minPrice,
+                'sample_products' => $sampleProducts,
+            ];
+
+            $index++;
         }
 
-        // Diğer veritabanındaki markalar (Cooler Master, NZXT, G.Skill vb.)
-        $knownNames = array_column($featuredBrandConfigs, 'name');
+        // Diğer veritabanındaki markalar (henüz Brand tablosuna eklenmemiş olanlar)
+        $knownNames = $brandsFromDb->pluck('name')->toArray();
         $otherBrands = Product::whereNotNull('brand')
             ->where('brand', '!=', '')
             ->whereNotIn('brand', $knownNames)
@@ -907,27 +852,17 @@ class ProductController extends Controller
      */
     public function brandShow($brandSlug, Request $request)
     {
-        $brandMap = [
-            'asus'          => 'ASUS',
-            'msi'           => 'MSI',
-            'samsung'       => 'Samsung',
-            'corsair'       => 'Corsair',
-            'kingston'      => 'Kingston',
-            'intel'         => 'Intel',
-            'amd'           => 'AMD',
-            'gigabyte'      => 'Gigabyte',
-            'afi-gaming'    => 'Afi Gaming',
-            'cooler-master' => 'Cooler Master',
-            'nzxt'          => 'NZXT',
-            'thermaltake'   => 'Thermaltake',
-            'crucial'       => 'Crucial',
-            'g-skill'       => 'G.Skill',
-            'logitech'      => 'Logitech',
-            'seagate'       => 'Seagate',
-            'wd'            => 'WD',
-        ];
+        // 1. Veritabanından marka kaydını bul (slug veya isim ile)
+        $brand = Brand::where('slug', $brandSlug)
+            ->orWhere('name', $brandSlug)
+            ->first();
 
-        $brandName = $brandMap[strtolower($brandSlug)] ?? ucfirst(str_replace('-', ' ', $brandSlug));
+        $brandName = $brand ? $brand->name : ucfirst(str_replace('-', ' ', $brandSlug));
+        $brandBio = $brand && !empty($brand->description) 
+            ? $brand->description 
+            : ($brand && !empty($brand->slogan) ? $brand->slogan : "{$brandName} markasının yüksek kaliteli ürünleri ve Afi Bilişim güvencesiyle sunulan parça ve bilgisayar kataloğu.");
+        $brandBadge = $brand ? $brand->badge : 'Resmi Marka Kataloğu';
+        $brandLogo = $brand ? $brand->logo_url : null;
 
         $query = Product::with('category')
             ->where('brand', 'LIKE', $brandName)
@@ -984,25 +919,13 @@ class ProductController extends Controller
         $brandCategories = Category::whereIn('id', $brandCategoryIds)->get();
         $totalBrandProducts = Product::where('brand', 'LIKE', $brandName)->count();
 
-        // Marka tanıtım bilgileri
-        $brandDescriptions = [
-            'ASUS' => 'ASUS, dünya çapında ROG (Republic of Gamers) ve TUF serisi üst düzey anakartları, ekran kartları, yüksek yenileme hızlı oyuncu monitörleri ve premium oyuncu laptopları ile oyun ve donanım teknolojisine yön vermektedir.',
-            'MSI' => 'MSI, True Gaming vizyonuyla oyuncular için tasarlanan yüksek soğutmalı ekran kartları, askeri sınıf Tomahawk/PRO anakartları, hazır masaüstü sistemleri ve güçlü taşınabilir bilgisayarlarıyla öne çıkar.',
-            'Samsung' => 'Samsung, dünyanın en gelişmiş V-NAND teknolojisine sahip 990 PRO & 980 PRO PCIe 4.0 NVMe SSD depolama çözümleri ve sürükleyici Odyssey kavisli gaming monitörleriyle hız ve görüntü kalitesini bir araya getirir.',
-            'Corsair' => 'Corsair, Vengeance ve Dominator serisi DDR5/DDR4 bellekleri, 80+ Gold sertifikalı sessiz ve modüler güç kaynakları ile hava akışı lideri bilgisayar kasalarıyla profesyonel oyuncuların ilk tercihidir.',
-            'Kingston' => 'Kingston, Fury Beast & Renegade RGB performans RAM’leri ve KC3000 / NV2 Gen4 yüksek hızlı SSD modelleri ile kararlı, hızlı ve uzun ömürlü sistem bileşenleri sunar.',
-            'Intel' => 'Intel, hibrit çekirdek mimarisine sahip 14. ve 13. nesil Core i9, i7 ve i5 işlemcileri ile en zorlu oyunlarda ve çoklu görevlerde ödün vermeyen performans sağlar.',
-            'AMD' => 'AMD, devrim niteliğindeki 3D V-Cache teknolojisine sahip Ryzen 7 7800X3D ve güçlü Ryzen serisi işlemcileriyle maksimum FPS ve enerji verimliliği sunar.',
-            'Gigabyte' => 'Gigabyte, AORUS serisi sıra dışı grafik kartları ve dayanıklı Ultra Durable anakartları ile esporcular ve donanım tutkunları için güvenilir çözümler üretir.',
-            'Afi Gaming' => 'Afi Gaming, uzman Afi Bilişim teknisyenleri tarafından titizlikle toplanan, kablolaması yapılan ve saatlerce süren termal stres testlerinden başarıyla geçen tam garantili hazır sistemlerdir.',
-        ];
-
-        $brandBio = $brandDescriptions[$brandName] ?? "{$brandName} markasının yüksek kaliteli ürünleri ve Afi Bilişim güvencesiyle sunulan parça ve bilgisayar kataloğu.";
-
         return view('brands.show', compact(
+            'brand',
             'brandName',
             'brandSlug',
             'brandBio',
+            'brandBadge',
+            'brandLogo',
             'products',
             'brandCategories',
             'activeCategory',

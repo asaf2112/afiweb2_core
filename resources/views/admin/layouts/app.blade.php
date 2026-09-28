@@ -148,6 +148,9 @@
             <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'bg-adminYellow text-slate-900 font-semibold' : 'text-adminText hover:bg-slate-800 hover:text-white' }} transition-colors">
                 <i class="fa-solid fa-tags w-5 text-center"></i> Kategoriler
             </a>
+            <a href="{{ route('admin.brands.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.brands.*') ? 'bg-adminYellow text-slate-900 font-semibold' : 'text-adminText hover:bg-slate-800 hover:text-white' }} transition-colors">
+                <i class="fa-solid fa-award w-5 text-center"></i> Marka Yönetimi
+            </a>
             <a href="{{ route('admin.orders.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.orders.*') ? 'bg-adminYellow text-slate-900 font-semibold' : 'text-adminText hover:bg-slate-800 hover:text-white' }} transition-colors">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-cart-shopping w-5 text-center"></i> Siparişler

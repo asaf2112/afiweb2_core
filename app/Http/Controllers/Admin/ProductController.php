@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Brand;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -69,6 +70,11 @@ class ProductController extends Controller
             $query->where('condition_type', $request->condition_type);
         }
 
+        // Marka Filtresi
+        if ($request->filled('brand')) {
+            $query->where('brand', $request->brand);
+        }
+
         // Stok Durum Filtresi
         if ($request->filled('stock_status')) {
             switch ($request->stock_status) {
@@ -127,15 +133,17 @@ class ProductController extends Controller
 
         // Filtreleme için tüm kategoriler (Ana ve Alt kategorileri ile)
         $categories = Category::with('children')->whereNull('parent_id')->orderBy('name')->get();
+        $brands = Brand::where('is_active', true)->orderBy('name')->get();
 
         $products = $query->paginate(15)->appends($request->all());
-        return view('admin.products.index', compact('products', 'stockStats', 'categories'));
+        return view('admin.products.index', compact('products', 'stockStats', 'categories', 'brands'));
     }
 
     public function create()
     {
         $categories = Category::whereNull('parent_id')->get();
-        return view('admin.products.create', compact('categories'));
+        $brands = Brand::where('is_active', true)->orderBy('name')->get();
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
     public function store(Request $request)
@@ -157,6 +165,7 @@ class ProductController extends Controller
             'discount_expires_at' => 'nullable|date',
             'stock' => 'required|integer',
             'badge' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:100',
             'is_bestseller' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
 
@@ -201,6 +210,17 @@ class ProductController extends Controller
             $validated['main_image'] = 'products/' . $filename;
         }
 
+        if ($request->filled('brand')) {
+            $brandName = trim($request->brand);
+            $validated['brand'] = $brandName;
+            Brand::firstOrCreate(
+                ['name' => $brandName],
+                ['slug' => Str::slug($brandName), 'is_active' => true]
+            );
+        } else {
+            $validated['brand'] = null;
+        }
+
         $product = Product::create($validated);
 
         if ($request->hasFile('images')) {
@@ -237,7 +257,9 @@ class ProductController extends Controller
                             ? $product->category_id 
                             : null;
 
-        return view('admin.products.edit', compact('product', 'categories', 'mainCategoryId', 'subCategoryId'));
+        $brands = Brand::where('is_active', true)->orderBy('name')->get();
+
+        return view('admin.products.edit', compact('product', 'categories', 'mainCategoryId', 'subCategoryId', 'brands'));
     }
 
     public function update(Request $request, Product $product)
@@ -259,6 +281,7 @@ class ProductController extends Controller
             'discount_expires_at' => 'nullable|date',
             'stock' => 'required|integer',
             'badge' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:100',
             'is_bestseller' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
 
@@ -306,6 +329,16 @@ class ProductController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('products'), $filename);
             $validated['main_image'] = 'products/' . $filename;
+        }
+        if ($request->filled('brand')) {
+            $brandName = trim($request->brand);
+            $validated['brand'] = $brandName;
+            Brand::firstOrCreate(
+                ['name' => $brandName],
+                ['slug' => Str::slug($brandName), 'is_active' => true]
+            );
+        } else {
+            $validated['brand'] = null;
         }
 
         $product->fill($validated);

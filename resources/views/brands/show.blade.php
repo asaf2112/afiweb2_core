@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', $brandName . ' Ürünleri ve Marka Kataloğu | Afi Bilişim')
 @section('meta_description', $brandName . ' marka hazır bilgisayarlar, oyuncu kasaları, anakartlar, ekran kartları ve donanım bileşenleri Afi Bilişim güvencesiyle.')
@@ -27,12 +27,16 @@
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                 <div class="flex items-start sm:items-center gap-4 sm:gap-6">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 flex items-center justify-center text-3xl sm:text-4xl font-black font-heading shrink-0 shadow-lg shadow-yellow-500/10">
-                        {{ substr($brandName, 0, 1) }}
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 flex items-center justify-center text-3xl sm:text-4xl font-black font-heading shrink-0 shadow-lg shadow-yellow-500/10 p-2 overflow-hidden">
+                        @if(!empty($brandLogo))
+                            <img src="{{ $brandLogo }}" alt="{{ $brandName }}" class="max-h-full max-w-full object-contain filter drop-shadow">
+                        @else
+                            {{ substr($brandName, 0, 1) }}
+                        @endif
                     </div>
                     <div>
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-400 text-[11px] font-black uppercase tracking-wider mb-2">
-                            <i class="fa-solid fa-award"></i> Resmi Marka Kataloğu
+                            <i class="fa-solid fa-award"></i> {{ $brandBadge ?? 'Resmi Marka Kataloğu' }}
                         </div>
                         <h1 class="font-heading text-2xl sm:text-4xl font-black text-white tracking-tight">
                             {{ $brandName }} <span class="text-gray-400 font-medium text-lg sm:text-2xl">Ürünleri & Donanımları</span>

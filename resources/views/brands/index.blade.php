@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Marka Katalogları | Dünyaca Ünlü Donanım & Bilgisayar Markaları - Afi Bilişim')
 @section('meta_description', 'ASUS, MSI, Samsung, Corsair, Kingston ve daha fazlası. Resmi garantili hazır bilgisayarlar, ekran kartları, anakartlar, RAM ve SSD depolama birimleri Afi Bilişim’de.')
@@ -72,8 +72,12 @@
                         <div class="p-6 bg-gradient-to-br {{ $b['logo_bg'] }} relative overflow-hidden">
                             <div class="flex items-center justify-between gap-3 relative z-10">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-2xl shadow-inner">
-                                        <i class="fa-solid {{ $b['icon'] }}"></i>
+                                    <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center p-2 text-white text-2xl shadow-inner shrink-0 overflow-hidden">
+                                        @if(!empty($b['logo']))
+                                            <img src="{{ $b['logo'] }}" alt="{{ $b['name'] }}" class="max-h-full max-w-full object-contain filter drop-shadow">
+                                        @else
+                                            <i class="fa-solid {{ $b['icon'] }}"></i>
+                                        @endif
                                     </div>
                                     <div>
                                         <span class="text-[10px] font-black uppercase tracking-widest text-yellow-300 block">{{ $b['badge'] }}</span>

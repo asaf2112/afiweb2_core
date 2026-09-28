@@ -72,6 +72,27 @@
                 </div>
             </div>
 
+            <!-- Marka Seçimi -->
+            <div>
+                <label for="brand" class="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+                    <span><i class="fa-solid fa-award text-adminYellow mr-1"></i> Ürün Markası</span>
+                    <a href="{{ route('admin.brands.index') }}" target="_blank" class="text-[11px] text-yellow-400 hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-gear"></i> Markaları Yönet
+                    </a>
+                </label>
+                <div class="relative">
+                    <input list="brands_datalist" name="brand" id="brand" value="{{ old('brand') }}" placeholder="Marka seçin veya yeni marka yazın (HP, TwinMOS, ASUS...)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-adminYellow focus:ring-1 focus:ring-adminYellow transition-colors">
+                    <datalist id="brands_datalist">
+                        @if(isset($brands) && $brands->count() > 0)
+                            @foreach($brands as $b)
+                                <option value="{{ $b->name }}"></option>
+                            @endforeach
+                        @endif
+                    </datalist>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1">Önerilen markalardan seçebilir veya doğrudan yeni bir marka adı yazabilirsiniz.</p>
+            </div>
+
             <!-- Rozet / Etiket Seçimi -->
             <div>
                 <label for="badge_preset_select" class="block text-sm font-semibold text-slate-300 mb-2">

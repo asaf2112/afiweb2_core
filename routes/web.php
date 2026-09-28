@@ -158,6 +158,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Kategori Yönetimi
     Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('categories.index');
     Route::get('categories/{category}/specs', [\App\Http\Controllers\Admin\ProductController::class, 'getCategorySpecs'])->name('categories.specs');
+
+    // Marka Yönetimi (CRUD)
+    Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class);
+    Route::post('brands/{brand}/toggle-featured', [\App\Http\Controllers\Admin\BrandController::class, 'toggleFeatured'])->name('brands.toggle-featured');
+    Route::post('brands/{brand}/toggle-active', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('brands.toggle-active');
     
     // Genel Arama
     Route::get('/search', [\App\Http\Controllers\Admin\DashboardController::class, 'search'])->name('search');

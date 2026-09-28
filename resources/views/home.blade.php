@@ -747,77 +747,38 @@
                 <!-- Brand Cards Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
                     @php
-                        $homeBrands = [
-                            [
-                                'name' => 'ASUS', 
-                                'slug' => 'asus', 
-                                'badge' => 'ROG & TUF', 
-                                'icon' => 'fa-laptop-code', 
-                                'bg' => 'from-blue-600/20 to-indigo-900/30', 
-                                'border' => 'group-hover:border-blue-500/60',
-                                'text_color' => 'text-blue-400'
-                            ],
-                            [
-                                'name' => 'MSI', 
-                                'slug' => 'msi', 
-                                'badge' => 'Gaming Series', 
-                                'icon' => 'fa-dragon', 
-                                'bg' => 'from-red-600/20 to-rose-900/30', 
-                                'border' => 'group-hover:border-red-500/60',
-                                'text_color' => 'text-red-400'
-                            ],
-                            [
-                                'name' => 'Samsung', 
-                                'slug' => 'samsung', 
-                                'badge' => '990 PRO & Odyssey', 
-                                'icon' => 'fa-bolt-lightning', 
-                                'bg' => 'from-sky-600/20 to-blue-900/30', 
-                                'border' => 'group-hover:border-sky-500/60',
-                                'text_color' => 'text-sky-400'
-                            ],
-                            [
-                                'name' => 'Corsair', 
-                                'slug' => 'corsair', 
-                                'badge' => 'DDR5 & PSU', 
-                                'icon' => 'fa-ship', 
-                                'bg' => 'from-amber-600/20 to-yellow-900/30', 
-                                'border' => 'group-hover:border-amber-500/60',
-                                'text_color' => 'text-amber-400'
-                            ],
-                            [
-                                'name' => 'Kingston', 
-                                'slug' => 'kingston', 
-                                'badge' => 'Fury Beast & SSD', 
-                                'icon' => 'fa-memory', 
-                                'bg' => 'from-red-700/20 to-orange-900/30', 
-                                'border' => 'group-hover:border-red-500/60',
-                                'text_color' => 'text-red-400'
-                            ],
-                            [
-                                'name' => 'Gigabyte', 
-                                'slug' => 'gigabyte', 
-                                'badge' => 'AORUS Gaming', 
-                                'icon' => 'fa-shield', 
-                                'bg' => 'from-orange-600/20 to-amber-900/30', 
-                                'border' => 'group-hover:border-orange-500/60',
-                                'text_color' => 'text-orange-400'
-                            ],
-                        ];
+                        $featuredBrands = \App\Models\Brand::where('is_active', true)
+                            ->where('is_featured', true)
+                            ->orderBy('sort_order')
+                            ->orderBy('name')
+                            ->take(6)
+                            ->get();
+                        
+                        if ($featuredBrands->isEmpty()) {
+                            $featuredBrands = \App\Models\Brand::where('is_active', true)
+                                ->orderBy('sort_order')
+                                ->take(6)
+                                ->get();
+                        }
                     @endphp
 
-                    @foreach($homeBrands as $hb)
-                        <a href="{{ route('brands.show', $hb['slug']) }}" 
-                           class="group relative bg-[#131722]/80 hover:bg-[#181d2a] border border-gray-800/80 {{ $hb['border'] }} rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-sm overflow-hidden">
+                    @foreach($featuredBrands as $hb)
+                        <a href="{{ route('brands.show', $hb->slug) }}" 
+                           class="group relative bg-[#131722]/80 hover:bg-[#181d2a] border border-gray-800/80 hover:border-yellow-500/50 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-sm overflow-hidden">
                             
-                            <div class="absolute inset-0 bg-gradient-to-br {{ $hb['bg'] }} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
 
-                            <div class="w-12 h-12 rounded-xl bg-gray-900/90 border border-gray-800 group-hover:scale-110 flex items-center justify-center {{ $hb['text_color'] }} text-xl mb-3 shadow-inner transition-transform relative z-10">
-                                <i class="fa-solid {{ $hb['icon'] }}"></i>
+                            <div class="w-12 h-12 rounded-xl bg-gray-900/90 border border-gray-800 group-hover:scale-110 flex items-center justify-center p-2 mb-3 shadow-inner transition-transform relative z-10 overflow-hidden">
+                                @if($hb->logo)
+                                    <img src="{{ $hb->logo_url }}" alt="{{ $hb->name }}" class="max-h-full max-w-full object-contain filter drop-shadow">
+                                @else
+                                    <i class="fa-solid fa-award text-yellow-400 text-lg"></i>
+                                @endif
                             </div>
 
-                            <div class="relative z-10">
-                                <h4 class="font-heading text-base font-black text-white group-hover:text-yellow-400 transition-colors">{{ $hb['name'] }}</h4>
-                                <span class="text-[10px] text-gray-400 font-semibold block mt-0.5 truncate max-w-[120px]">{{ $hb['badge'] }}</span>
+                            <div class="relative z-10 w-full">
+                                <h4 class="font-heading text-base font-black text-white group-hover:text-yellow-400 transition-colors truncate">{{ $hb->name }}</h4>
+                                <span class="text-[10px] text-gray-400 font-semibold block mt-0.5 truncate max-w-full">{{ $hb->badge ?: ($hb->slogan ?: 'Katalog') }}</span>
                             </div>
 
                             <div class="mt-3 relative z-10 text-[11px] font-bold text-yellow-500 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
