@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /sepet
+Disallow: /odeme
+Disallow: /profil
+Disallow: /siparislerim
+Disallow: /bildirimlerim
+Disallow: /favorites
+Disallow: /verify-phone
+Disallow: /register
+Disallow: /login
+Disallow: /logout
+Disallow: /api/
+Disallow: /forgot-password
+Disallow: /reset-password/
+
+# XML Sitemap
+Sitemap: https://afibilisim.com/sitemap.xml
+
+Crawl-delay: 5
