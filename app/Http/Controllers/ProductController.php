@@ -139,6 +139,25 @@ class ProductController extends Controller
             }
         }
 
+        // Oyuncu PC filtresi
+        if ($request->filled('is_gaming')) {
+            $query->where(function($q) {
+                $q->whereHas('category', function($cq) {
+                    $cq->where('slug', 'LIKE', '%oyuncu%')
+                       ->orWhere('slug', 'LIKE', '%gaming%')
+                       ->orWhere('name', 'LIKE', '%oyuncu%')
+                       ->orWhere('name', 'LIKE', '%gaming%');
+                })
+                ->orWhere('badge', 'LIKE', '%gaming%')
+                ->orWhere('badge', 'LIKE', '%oyuncu%')
+                ->orWhere('title', 'LIKE', '%oyuncu%')
+                ->orWhere('title', 'LIKE', '%gaming%')
+                ->orWhere('specs->is_gaming', '1')
+                ->orWhere('specs->is_gaming', 'true')
+                ->orWhere('specs', 'LIKE', '%"is_gaming"%');
+            });
+        }
+
         // Fiyat aralığı
         if ($request->filled('price_max')) {
             $query->where('price', '<=', (float) $request->input('price_max'));

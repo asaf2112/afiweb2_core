@@ -210,17 +210,88 @@
 </header>
 
 {{-- ═══════════════════════════════════════════
-     İÇERİK: Sidebar + Grid
+     İÇERİK: Sidebar + Grid + Güvence Bölümleri
 ═══════════════════════════════════════════ --}}
 <div class="bg-gray-50 py-10 min-h-screen">
     <div class="max-w-7xl mx-auto px-6 md:px-12">
 
+        {{-- ── HIZLI KATEGORİ VE FİLTRE HAPLARI ── --}}
+        <div class="mb-6">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none no-scrollbar text-xs font-semibold">
+                <a href="{{ route('second-hand.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ empty(request()->all()) ? 'bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-layer-group"></i> Tüm İkinci El
+                </a>
+                <a href="{{ route('second-hand.index', ['is_gaming' => 1]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ request('is_gaming') == '1' ? 'bg-purple-600 text-white shadow-purple-500/20' : 'bg-white text-gray-700 hover:bg-purple-50 hover:text-purple-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-gamepad text-purple-500"></i> Oyuncu Sistemleri
+                </a>
+                <a href="{{ route('second-hand.index', ['category_id' => 4]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ request('category_id') == 4 ? 'bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-laptop text-emerald-500"></i> İkinci El Laptoplar
+                </a>
+                <a href="{{ route('second-hand.index', ['desktop_type' => ['Full Set']]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ in_array('Full Set', (array)request('desktop_type', [])) ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-box-open text-blue-500"></i> Full Set Paketler
+                </a>
+                <a href="{{ route('second-hand.index', ['desktop_type' => ['Sadece Kasa']]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ in_array('Sadece Kasa', (array)request('desktop_type', [])) ? 'bg-amber-600 text-white shadow-amber-500/20' : 'bg-white text-gray-700 hover:bg-amber-50 hover:text-amber-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-server text-amber-500"></i> Sadece Kasa
+                </a>
+                <a href="{{ route('second-hand.index', ['price_max' => 20000]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm {{ request('price_max') == 20000 ? 'bg-rose-600 text-white shadow-rose-500/20' : 'bg-white text-gray-700 hover:bg-rose-50 hover:text-rose-700 border border-gray-200/80' }}">
+                    <i class="fa-solid fa-fire text-rose-500"></i> 20.000 ₺ Altı Fırsatlar
+                </a>
+                <button type="button" onclick="openTradeInModal()"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all shadow-sm bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 ml-auto cursor-pointer font-bold">
+                    <i class="fa-solid fa-arrows-rotate"></i> Eski Cihazını Bize Sat
+                </button>
+            </div>
+        </div>
+
+        {{-- ── TRADE-IN / ESKİ CİHAZINI SAT BANNERI ── --}}
+        <div class="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-500/30 p-6 md:p-8 text-white shadow-xl">
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+                <div class="space-y-2 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-recycle"></i> Eskiyi Getir, Yeniyi Götür
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+                        Eski Bilgisayarını veya Parçalarını <span class="text-emerald-400">Değerinde Sat!</span>
+                    </h2>
+                    <p class="text-gray-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                        Kasa, laptop, ekran kartı ya da monitörünü getir; 15 dakikada ücretsiz ekspertiz yapalım. İster anında <strong class="text-white">nakit ödeme</strong> al, ister yeni alışverişinde <strong class="text-white">takas indirimi</strong> olarak kullan.
+                    </p>
+                </div>
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 w-full lg:w-auto">
+                    <a href="https://wa.me/905555555555?text={{ urlencode('Merhaba Afi Bilişim! İkinci el bilgisayarımı / parçamı satmak veya takas etmek için fiyat teklifi almak istiyorum.') }}"
+                       target="_blank"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25">
+                        <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp'tan Fiyat Al
+                    </a>
+                    <button type="button"
+                            onclick="openTradeInModal()"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/15">
+                        <i class="fa-solid fa-clipboard-list text-emerald-400"></i> Hızlı Teklif Formu
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {{-- Aktif filtre badge'leri --}}
         @php
-            $hasAnyFilter = !empty($specFilters) || !empty($desktopTypeFilter) || request('category_id') || request('price_max') || request('brand') || request('search');
+            $hasAnyFilter = !empty($specFilters) || !empty($desktopTypeFilter) || request('category_id') || request('price_max') || request('brand') || request('search') || request('is_gaming');
         @endphp
         @if($hasAnyFilter)
         <div class="flex flex-wrap items-center gap-2 mb-6">
+            {{-- Oyuncu Sistemleri badge --}}
+            @if(request('is_gaming'))
+                <a href="{{ request()->fullUrlWithQuery(['is_gaming' => null]) }}" class="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1 rounded-full text-xs font-semibold hover:bg-purple-100 transition" title="Filtreyi kaldır">
+                    <i class="fa-solid fa-gamepad text-[9px]"></i> Oyuncu Sistemleri
+                    <i class="fa-solid fa-xmark text-[10px] ml-0.5 text-purple-500"></i>
+                </a>
+            @endif
             {{-- Arama badge --}}
             @if(request('search'))
                 <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200 transition" title="Aramayı kaldır">
@@ -688,10 +759,275 @@
 
             </main>
         </div>
+
+        {{-- ── 4 AŞAMALI GÜVENCE STANDARTLARI ── --}}
+        <div class="mt-16 pt-12 border-t border-gray-200">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-100 px-3.5 py-1.5 rounded-full border border-emerald-300">
+                    Afi Bilişim Güvencesi
+                </span>
+                <h2 class="text-2xl md:text-3xl font-black text-gray-900 mt-3">
+                    Neden Afi Bilişim İkinci El?
+                </h2>
+                <p class="text-gray-500 text-xs sm:text-sm mt-2">
+                    Bireysel sahibinden riskine son; her ürün profesyonel teknisyenlerimizce incelenip garanti kapsamına alınır.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">32 Nokta Donanım Testi</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        İşlemci (AIDA64/Prime95), ekran kartı (FurMark), RAM (MemTest86) ve SSD sağlık testlerinden %100 sorunsuz geçen ürünler satışa sunulur.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-spray-can-sparkles"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">Termal Bakım & Temizlik</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        Tüm toz ve partiküller basınçlı hava ile arındırılır, yüksek iletkenlikli Arctic MX-4 termal macun yenilenerek serin çalışma sağlanır.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">Faturalı & 6 Ay Garanti</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        Her alışverişiniz adınıza resmi e-fatura ve 6 ay Afi Bilişim teknik servis garantisi ile korunur. Süpriz arızalara yer yok.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base mb-1.5">14 Gün Kolay İade</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        Cihazınız beklentinizi karşılamazsa 14 gün içerisinde koşulsuz iade edebilir veya mağazamızdaki başka bir ürünle değiştirebilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── KOZMETİK DERECELENDİRME REHBERİ ── --}}
+        <div class="mt-14 bg-gradient-to-br from-emerald-950 via-gray-900 to-slate-900 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-xl border border-emerald-500/20">
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="max-w-2xl mb-8 relative z-10">
+                <span class="text-emerald-400 font-bold text-xs uppercase tracking-widest bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/30">
+                    Şeffaf Kondisyon Kriterleri
+                </span>
+                <h2 class="text-2xl md:text-3xl font-black text-white mt-3">
+                    Ürün Durum Rehberi: Ne Aldığınızı Bilin
+                </h2>
+                <p class="text-gray-300 text-xs md:text-sm mt-2">
+                    İkinci el ürünlerimizin tamamı donanımsal olarak %100 kusursuzdur. Kozmetik durumları ise 3 şeffaf kademede sınıflandırılır:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black mb-3">
+                        <i class="fa-solid fa-gem"></i> Derece: A+ (Kusursuz)
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-2">Sıfırdan Farksız / Teşhir</h3>
+                    <p class="text-gray-300 text-xs leading-relaxed">
+                        Çiziksiz, darbesiz, çoğu zaman orijinal kutusunda ya da vitrin ürünü olarak az kullanılmış en üst kondisyondaki cihazlardır.
+                    </p>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-black mb-3">
+                        <i class="fa-solid fa-circle-check"></i> Derece: A (Çok Temiz)
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-2">Çok Temiz Kondisyon</h3>
+                    <p class="text-gray-300 text-xs leading-relaxed">
+                        Sadece çok yakından bakıldığında görülebilecek mikro kullanım izleri haricinde pürüzsüz, içi tamamen yenilenmiş sistemlerdir.
+                    </p>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black mb-3">
+                        <i class="fa-solid fa-bolt"></i> Derece: B (Fiyat/Performans)
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-2">Ekonomik & Güçlü</h3>
+                    <p class="text-gray-300 text-xs leading-relaxed">
+                        Kasa veya kapakta normal kullanıma bağlı hafif kılcal çizikleri bulunan, donanımı saat gibi işleyen en avantajlı bütçe dostu ürünlerdir.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── ÖZEL İKİNCİ EL TOPLAMA & DANIŞMANLIK CTA ── --}}
+        <div class="mt-14 bg-white rounded-3xl p-8 border border-emerald-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-3xl shrink-0">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">Aradığınız Sistemi Bulamadınız mı?</h3>
+                    <p class="text-gray-500 text-xs sm:text-sm mt-1">
+                        Bütçenizi ve oynamak istediğiniz oyunları bize söyleyin, depomuzdaki test edilmiş parçalarla size özel ikinci el sistem toplayalım!
+                    </p>
+                </div>
+            </div>
+            <div class="shrink-0 flex flex-wrap sm:flex-nowrap gap-3 w-full md:w-auto">
+                <a href="https://wa.me/905555555555?text={{ urlencode('Merhaba Afi Bilişim! İkinci el özel kasa toplama veya sistem danışmanlığı hakkında bilgi almak istiyorum.') }}"
+                   target="_blank"
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20">
+                    <i class="fa-brands fa-whatsapp text-base"></i> Uzmanımıza Danışın
+                </a>
+                <a href="{{ route('pc-builder.index') }}"
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs uppercase tracking-wider transition">
+                    <i class="fa-solid fa-screwdriver-wrench text-emerald-600"></i> PC Sihirbazı
+                </a>
+            </div>
+        </div>
+
+        {{-- ── SIKÇA SORULAN SORULAR ── --}}
+        <div class="mt-14 max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-gray-900">İkinci El Alışverişi Hakkında Merak Edilenler</h2>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Aklınıza takılan soruların yanıtlarını burada bulabilirsiniz.</p>
+            </div>
+
+            <div class="space-y-3">
+                @foreach([
+                    [
+                        'q' => 'İkinci el ürünlerin garantisi var mı?',
+                        'a' => 'Evet! Afi Bilişim\'den satın aldığınız tüm ikinci el masaüstü bilgisayar, laptop ve donanım parçaları 6 ay süresince doğrudan firmamızın teknik servis garantisi altındadır. Ayrıca cihazların faturası adınıza düzenlenmektedir.'
+                    ],
+                    [
+                        'q' => 'Ürünü mağazanızda görüp test ederek alabilir miyim?',
+                        'a' => 'Kesinlikle. Fiziksel mağazamıza gelerek beğendiğiniz ürünü FurMark, AIDA64 veya istediğiniz oyun ve programlarla bizzat test edebilir, uzman teknisyenlerimiz eşliğinde elden teslim alabilirsiniz.'
+                    ],
+                    [
+                        'q' => 'Eski bilgisayarımı veya parçalarımı getirip takas yapabilir miyim?',
+                        'a' => 'Evet. Eskiyi Getir / Yeniyi Götür programımız kapsamında mevcut cihazınızı veya donanım parçalarınızı (ekran kartı, işlemci, RAM vb.) değerinde sayarak yeni alacağınız sistemden takas indirimi düşebiliyoruz.'
+                    ],
+                    [
+                        'q' => 'İkinci el sistemde RAM veya SSD yükseltmesi yapabilir miyim?',
+                        'a' => 'Elbette. Satın almak istediğiniz kasanın veya laptopun RAM, SSD ya da ekran kartını sipariş esnasında veya mağazamızda istediğiniz kapasiteye yükseltebilir, size özel konfigüre ettirebilirsiniz.'
+                    ],
+                    [
+                        'q' => 'Kargo ile sipariş verirsem ürün nasıl paketlenir?',
+                        'a' => 'Masaüstü kasalar ve laptoplar iç ve dış korumalı balonlu naylon, köpük destekli özel darbe emici kutularla paketlenir. Ekran kartı gibi ağır parçalar kargo esnasında yuvasına zarar vermemesi için özel sabitleme ile gönderilir.'
+                    ],
+                ] as $idx => $faq)
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm transition">
+                    <button type="button"
+                            onclick="toggleFaq({{ $idx }})"
+                            class="w-full flex items-center justify-between p-5 text-left font-bold text-gray-800 text-sm hover:text-emerald-700 transition">
+                        <span>{{ $faq['q'] }}</span>
+                        <i id="faq-icon-{{ $idx }}" class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="faq-ans-{{ $idx }}" class="hidden px-5 pb-5 text-xs text-gray-600 leading-relaxed border-t border-gray-100 pt-3">
+                        {{ $faq['a'] }}
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{-- ── TRADE-IN / DEĞERLEME MODALI ── --}}
+<div id="sh-tradein-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 animate-in fade-in zoom-in duration-200">
+        <button type="button" onclick="closeTradeInModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid fa-arrows-rotate"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-black text-gray-900 leading-tight">Eski Cihazını Sat & Fiyat Al</h3>
+                <p class="text-xs text-gray-500">Bilgileri doldurun, WhatsApp üzerinden hemen teklif verelim.</p>
+            </div>
+        </div>
+
+        <form id="tradein-form" onsubmit="submitTradeIn(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Cihaz Türü</label>
+                <select id="ti-type" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none focus:border-emerald-500">
+                    <option value="Masaüstü Oyun Kasası">🎮 Masaüstü Oyun Kasası</option>
+                    <option value="Dizüstü Bilgisayar (Laptop)">💻 Laptop / Dizüstü</option>
+                    <option value="Ekran Kartı (GPU)">⚡ Ekran Kartı</option>
+                    <option value="Oyuncu Monitörü">🖥️ Monitör</option>
+                    <option value="Bileşenler / Parçalar">🧩 İşlemci / Anakart / RAM</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Cihaz / Parça Özellikleri ve Modeli</label>
+                <textarea id="ti-specs" rows="3" required
+                          placeholder="Örn: ASUS ROG Strix RTX 3070 8GB, kutusu faturası var, temiz..."
+                          class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-800 focus:outline-none focus:border-emerald-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Kozmetik Durum</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
+                        <input type="radio" name="ti_condition" value="Sıfır Ayarında / Kutulu" checked class="text-emerald-500">
+                        <span>A+ (Kutulu)</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
+                        <input type="radio" name="ti_condition" value="Temiz / Sorunsuz" class="text-emerald-500">
+                        <span>A (Temiz)</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 p-2 rounded-xl border border-gray-200 text-xs cursor-pointer hover:bg-emerald-50">
+                        <input type="radio" name="ti_condition" value="Kullanım İzi Var" class="text-emerald-500">
+                        <span>B (İyi)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp ile Hızlı Fiyat İste
+            </button>
+        </form>
     </div>
 </div>
 
 <script>
+window.openTradeInModal = function() {
+    const m = document.getElementById('sh-tradein-modal');
+    if (m) m.classList.remove('hidden');
+};
+window.closeTradeInModal = function() {
+    const m = document.getElementById('sh-tradein-modal');
+    if (m) m.classList.add('hidden');
+};
+window.toggleFaq = function(idx) {
+    const ans = document.getElementById('faq-ans-' + idx);
+    const icon = document.getElementById('faq-icon-' + idx);
+    if (ans) {
+        ans.classList.toggle('hidden');
+        if (icon) icon.classList.toggle('rotate-180');
+    }
+};
+window.submitTradeIn = function(e) {
+    e.preventDefault();
+    const type = document.getElementById('ti-type').value;
+    const specs = document.getElementById('ti-specs').value;
+    const condEl = document.querySelector('input[name="ti_condition"]:checked');
+    const cond = condEl ? condEl.value : '';
+    const text = `Merhaba Afi Bilişim! İkinci el cihazımı satmak / takas teklifi almak istiyorum:\n\n• Cihaz Türü: ${type}\n• Özellikler: ${specs}\n• Kondisyon: ${cond}\n\nFiyat teklifinizi alabilir miyim?`;
+    window.open(`https://wa.me/905555555555?text=${encodeURIComponent(text)}`, '_blank');
+    closeTradeInModal();
+};
 window.toggleCat = function(liEl) { if (liEl) liEl.classList.toggle('open'); };
 window.toggleSpecGroup = function(id) {
     var el = typeof id === 'string' ? document.getElementById(id) : id;
