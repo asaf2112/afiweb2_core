@@ -434,7 +434,36 @@
                             </div>
                         </div>
 
-
+                        {{-- ─── MARKA FİLTRESİ ─── --}}
+                        @if(isset($allBrands) && $allBrands->count() > 0)
+                        <div>
+                            <div class="h-px bg-gray-100 mb-5"></div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-award text-yellow-500"></i> Markalar
+                                </h3>
+                                @if(request('brand'))
+                                    <a href="{{ request()->fullUrlWithoutQuery('brand') }}" class="text-[10px] text-red-500 font-bold hover:underline">Temizle</a>
+                                @endif
+                            </div>
+                            <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                                @foreach($allBrands as $bName)
+                                    @php $isBrandActive = request('brand') === $bName; @endphp
+                                    <label class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition select-none {{ $isBrandActive ? 'bg-yellow-500/10 text-yellow-800 font-bold border border-yellow-500/30' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <span class="flex items-center gap-2">
+                                            <input type="radio" 
+                                                   name="brand" 
+                                                   value="{{ $bName }}" 
+                                                   {{ $isBrandActive ? 'checked' : '' }} 
+                                                   onchange="document.getElementById('filter-form').submit()" 
+                                                   class="text-yellow-500 focus:ring-yellow-400">
+                                            <span>{{ $bName }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
                         {{-- ─── FİYAT ARALIĞI ─── --}}
                         @if(isset($priceRange) && $priceRange['max'] > 0)

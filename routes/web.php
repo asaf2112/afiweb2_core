@@ -28,6 +28,10 @@ Route::get('/ikinci-el', [ProductController::class, 'secondHandIndex'])->name('s
 Route::get('/kategori/{slug}', [ProductController::class, 'category'])->name('category.show');
 Route::get('/urun-detay/{slug}', [ProductController::class, 'show'])->name('products.show');
 
+// Marka Katalogları
+Route::get('/markalar', [ProductController::class, 'brandsIndex'])->name('brands.index');
+Route::get('/marka/{brand}', [ProductController::class, 'brandShow'])->name('brands.show');
+
 // İletişim Formu (Rate Limit: 5 req/min)
 Route::get('/iletisim', function () {
     return view('contact');

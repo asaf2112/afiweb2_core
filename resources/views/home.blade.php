@@ -725,6 +725,110 @@
 
             </div>
 
+            <!-- Popüler Marka Katalogları Vitrini -->
+            <div class="mb-14 scroll-reveal-item">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-black uppercase tracking-wider mb-2">
+                            <i class="fa-solid fa-award"></i> Lider Markalar
+                        </div>
+                        <h3 class="font-heading text-2xl sm:text-3xl font-black text-white tracking-tight">
+                            Popüler <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500">Marka Katalogları</span>
+                        </h3>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-1">İster hazır sistemleri, ister donanım bileşenlerini markasına göre keşfedin.</p>
+                    </div>
+
+                    <a href="{{ route('brands.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 hover:bg-yellow-500/20 px-4 py-2 rounded-xl border border-yellow-500/30 transition self-start sm:self-auto">
+                        <span>Tüm Markaları Gör (15+)</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <!-- Brand Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+                    @php
+                        $homeBrands = [
+                            [
+                                'name' => 'ASUS', 
+                                'slug' => 'asus', 
+                                'badge' => 'ROG & TUF', 
+                                'icon' => 'fa-laptop-code', 
+                                'bg' => 'from-blue-600/20 to-indigo-900/30', 
+                                'border' => 'group-hover:border-blue-500/60',
+                                'text_color' => 'text-blue-400'
+                            ],
+                            [
+                                'name' => 'MSI', 
+                                'slug' => 'msi', 
+                                'badge' => 'Gaming Series', 
+                                'icon' => 'fa-dragon', 
+                                'bg' => 'from-red-600/20 to-rose-900/30', 
+                                'border' => 'group-hover:border-red-500/60',
+                                'text_color' => 'text-red-400'
+                            ],
+                            [
+                                'name' => 'Samsung', 
+                                'slug' => 'samsung', 
+                                'badge' => '990 PRO & Odyssey', 
+                                'icon' => 'fa-bolt-lightning', 
+                                'bg' => 'from-sky-600/20 to-blue-900/30', 
+                                'border' => 'group-hover:border-sky-500/60',
+                                'text_color' => 'text-sky-400'
+                            ],
+                            [
+                                'name' => 'Corsair', 
+                                'slug' => 'corsair', 
+                                'badge' => 'DDR5 & PSU', 
+                                'icon' => 'fa-ship', 
+                                'bg' => 'from-amber-600/20 to-yellow-900/30', 
+                                'border' => 'group-hover:border-amber-500/60',
+                                'text_color' => 'text-amber-400'
+                            ],
+                            [
+                                'name' => 'Kingston', 
+                                'slug' => 'kingston', 
+                                'badge' => 'Fury Beast & SSD', 
+                                'icon' => 'fa-memory', 
+                                'bg' => 'from-red-700/20 to-orange-900/30', 
+                                'border' => 'group-hover:border-red-500/60',
+                                'text_color' => 'text-red-400'
+                            ],
+                            [
+                                'name' => 'Gigabyte', 
+                                'slug' => 'gigabyte', 
+                                'badge' => 'AORUS Gaming', 
+                                'icon' => 'fa-shield', 
+                                'bg' => 'from-orange-600/20 to-amber-900/30', 
+                                'border' => 'group-hover:border-orange-500/60',
+                                'text_color' => 'text-orange-400'
+                            ],
+                        ];
+                    @endphp
+
+                    @foreach($homeBrands as $hb)
+                        <a href="{{ route('brands.show', $hb['slug']) }}" 
+                           class="group relative bg-[#131722]/80 hover:bg-[#181d2a] border border-gray-800/80 {{ $hb['border'] }} rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-sm overflow-hidden">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-br {{ $hb['bg'] }} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+
+                            <div class="w-12 h-12 rounded-xl bg-gray-900/90 border border-gray-800 group-hover:scale-110 flex items-center justify-center {{ $hb['text_color'] }} text-xl mb-3 shadow-inner transition-transform relative z-10">
+                                <i class="fa-solid {{ $hb['icon'] }}"></i>
+                            </div>
+
+                            <div class="relative z-10">
+                                <h4 class="font-heading text-base font-black text-white group-hover:text-yellow-400 transition-colors">{{ $hb['name'] }}</h4>
+                                <span class="text-[10px] text-gray-400 font-semibold block mt-0.5 truncate max-w-[120px]">{{ $hb['badge'] }}</span>
+                            </div>
+
+                            <div class="mt-3 relative z-10 text-[11px] font-bold text-yellow-500 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                                <span>Katalog</span>
+                                <i class="fa-solid fa-angle-right text-[9px]"></i>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             <!-- Bottom Full-Width Special Promotion Ribbon -->
             <div class="bg-gradient-to-r from-gray-900 via-[#161a23] to-gray-900 border border-yellow-500/30 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden scroll-reveal-item">
                 <div class="absolute -left-20 top-0 w-60 h-60 bg-yellow-500/10 rounded-full filter blur-[70px] pointer-events-none"></div>

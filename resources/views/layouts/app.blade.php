@@ -532,9 +532,11 @@
                     <span class="absolute -top-1.5 -right-1.5 text-[8px] bg-yellow-400 text-afiDark font-black px-1.5 py-0.5 rounded-full leading-none">
                         GÜVENCE
                     </span>
-                </a>
                 <a href="{{ route('pc-builder.index') }}" class="hover:text-yellow-400 transition py-2 font-bold flex items-center gap-1.5 text-yellow-400">
                     <i class="fa-solid fa-microchip"></i> PC Sihirbazı
+                </a>
+                <a href="{{ route('brands.index') }}" class="hover:text-yellow-400 transition py-2 font-bold flex items-center gap-1.5 {{ request()->routeIs('brands.*') ? 'text-yellow-400' : 'text-gray-200' }}">
+                    <i class="fa-solid fa-award text-yellow-500"></i> Markalar
                 </a>
                 <a href="{{ route('service-request.create') }}" class="hover:text-yellow-400 transition py-2 font-semibold">Teknik Servis</a>
                 <button type="button" onclick="openServiceTrackingModal()" class="hover:bg-yellow-500 hover:text-afiDark text-yellow-400 border border-yellow-500/40 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 bg-yellow-500/10 shadow-sm cursor-pointer" title="Cihaz Servis Durumu Sorgula">
@@ -637,6 +639,9 @@
                 </a>
                 <a href="{{ route('products.index') }}" class="flex items-center gap-2 p-2.5 rounded-xl bg-gray-800/60 hover:bg-gray-800 text-white font-semibold transition text-xs">
                     <i class="fa-solid fa-layer-group text-yellow-500"></i> Tüm Ürünler
+                </a>
+                <a href="{{ route('brands.index') }}" class="flex items-center gap-2 p-2.5 rounded-xl bg-gray-800/60 hover:bg-gray-800 text-white font-semibold transition text-xs">
+                    <i class="fa-solid fa-award text-yellow-500"></i> Markalar
                 </a>
                 <a href="{{ route('second-hand.index') }}" class="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold transition text-xs">
                     <i class="fa-solid fa-recycle text-emerald-400"></i> İkinci El
